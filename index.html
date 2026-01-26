@@ -3,83 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Esports Point Tracker</title>
+    <title>Pro Tournament Scorer</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: white; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: #2d2d2d; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h2 { color: #7289da; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #36393f; }
-        th, td { padding: 12px; border: 1px solid #444; text-align: center; }
-        th { background: #202225; color: #b9bbbe; text-transform: uppercase; font-size: 12px; }
-        .top-3 { background: rgba(39, 174, 96, 0.2); font-weight: bold; border-left: 5px solid #27ae60; }
-        input { padding: 8px; border-radius: 4px; border: 1px solid #444; background: #40444b; color: white; width: 80%; }
-        .controls { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; background: #202225; padding: 15px; border-radius: 8px; }
-        .btn { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; transition: 0.2s; }
-        .btn-add { background: #27ae60; color: white; }
-        .btn-add:hover { background: #219150; }
-        .btn-save { background: #f1c40f; color: black; }
-        .btn-discord { background: #7289da; color: white; }
-        .rank-highlight { color: #f1c40f; font-size: 1.2em; }
+        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #7289da; padding-bottom: 15px; margin-bottom: 20px; }
+        .map-badge { background: #7289da; padding: 8px 20px; border-radius: 5px; font-weight: bold; font-size: 1.1em; }
+        
+        /* Layout Grid */
+        .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; background: #252525; margin-bottom: 10px; }
+        th, td { padding: 10px; border: 1px solid #333; text-align: center; }
+        th { background: #111; color: #7289da; font-size: 0.85em; text-transform: uppercase; }
+
+        .winners-box { background: #2d2d2d; padding: 15px; border-radius: 8px; border: 1px solid #f1c40f; margin-bottom: 20px; }
+        .podium { display: flex; justify-content: space-around; text-align: center; margin-top: 10px; }
+        .gold { color: #f1c40f; } .silver { color: #bdc3c7; } .bronze { color: #cd7f32; }
+
+        .history-log { background: #111; padding: 15px; border-radius: 8px; height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.9em; border: 1px solid #333; }
+        .log-entry { border-bottom: 1px solid #222; padding: 5px 0; color: #aaa; }
+
+        input { background: #333; color: white; border: 1px solid #444; padding: 5px; border-radius: 3px; width: 60px; }
+        .btn { padding: 12px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; transition: 0.3s; }
+        .btn-update { background: #27ae60; color: white; width: 100%; margin-top: 10px; font-size: 1em; }
+        .btn-reset { background: #c0392b; color: white; font-size: 0.8em; }
+        
+        .top-row { background: rgba(114, 137, 218, 0.1); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🏆 Tournament Point Scorer</h2>
-    <p id="dateTime" style="color: #8e9297;"></p>
-
-    <div class="controls">
-        <label>Number of Teams:</label>
-        <input type="number" id="teamCount" value="20" min="1" max="50" style="width: 60px;">
-        <button class="btn btn-add" onclick="setupTeams()">Initialize Lobby</button>
-        <button class="btn btn-save" onclick="saveToLocal()">💾 Save Progress</button>
-        <span style="font-size: 0.8em; color: #aaa;">(Webhook Linked)</span>
-    </div>
-
-    <div id="setupSection" style="display:none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>Input Match Results</h3>
-            <div id="mapIndicator" style="font-weight: bold; color: #7289da;">Map Data Entry</div>
+    <div class="header">
+        <div>
+            <h2>🏆 Tournament Master</h2>
+            <span id="dateTime"></span>
         </div>
-        
-        <table id="entryTable">
-            <thead>
-                <tr>
-                    <th>Team Name</th>
-                    <th>Rank (1-10)</th>
-                    <th>Kills</th>
-                </tr>
-            </thead>
-            <tbody id="entryBody"></tbody>
-        </table>
-        <br>
-        <button class="btn btn-discord" style="width: 100%; font-size: 1.1em;" onclick="calculatePoints()">Update Standings & Send to Discord</button>
+        <div id="mapCounter" class="map-badge">MAP 1</div>
     </div>
 
-    <hr style="border: 0.5px solid #444; margin: 30px 0;">
+    <div class="winners-box">
+        <h3 style="margin:0; text-align: center;">⭐ CURRENT TOP 3 (Combined Points) ⭐</h3>
+        <div class="podium" id="podiumUI">
+            <div class="silver">🥈 2nd: ---</div>
+            <div class="gold" style="font-size: 1.4em;">🥇 CHAMPION: ---</div>
+            <div class="bronze">🥉 3rd: ---</div>
+        </div>
+    </div>
 
-    <h3>📊 Current Leaderboard</h3>
-    <table id="leaderboard">
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Team</th>
-                <th>Total Points</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="leaderboardBody"></tbody>
-    </table>
+    <div class="main-grid">
+        <div>
+            <div style="margin-bottom: 15px;">
+                <label>Teams:</label>
+                <input type="number" id="teamCount" value="20" style="width: 40px;">
+                <button onclick="setupTeams()" class="btn" style="background: #3498db; color: white; padding: 5px 10px;">Set Lobby</button>
+                <button onclick="fullReset()" class="btn btn-reset" style="float: right;">Full Reset</button>
+            </div>
+
+            <div id="setupSection" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team Name</th>
+                            <th>Rank (1-10)</th>
+                            <th>Kills</th>
+                            <th>Current Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="entryBody"></tbody>
+                </table>
+                <button class="btn btn-update" onclick="processMap()">RECORD MAP & SYNC DISCORD</button>
+            </div>
+        </div>
+
+        <div>
+            <h3>📜 History Log</h3>
+            <div class="history-log" id="historyLog">
+                <div class="log-entry">Waiting for Match 1...</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // YOUR WEBHOOK IS EMBEDDED HERE
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1465319966214717551/TJkxG_fCB0JRQqM2u8dgK3WhmMMERJE8SoZjiC_LHqmfdG1PCg6vgVGecztN0v8r77O4";
     
     let teams = [];
+    let currentMap = 1;
     const placementPoints = { 1:10, 2:8, 3:6, 4:4, 5:4, 6:2, 7:1, 8:1, 9:1, 10:1 };
 
-    document.getElementById('dateTime').innerText = "Last Updated: " + new Date().toLocaleString();
+    function updateTime() {
+        document.getElementById('dateTime').innerText = new Date().toLocaleString();
+    }
+    setInterval(updateTime, 1000);
 
     function setupTeams() {
         const count = document.getElementById('teamCount').value;
@@ -88,87 +105,102 @@
         teams = [];
 
         for (let i = 1; i <= count; i++) {
-            let teamName = `Team ${i}`;
-            teams.push({ name: teamName, totalPoints: 0 });
-            entryBody.innerHTML += `
-                <tr>
-                    <td><input type="text" value="${teamName}" id="name-${i}"></td>
-                    <td><input type="number" id="rank-${i}" min="1" placeholder="Rank" value="11"></td>
-                    <td><input type="number" id="kills-${i}" min="0" placeholder="Kills" value="0"></td>
-                </tr>
-            `;
+            teams.push({ name: `Team ${i}`, totalPoints: 0 });
+            addTeamRow(i, `Team ${i}`);
         }
         document.getElementById('setupSection').style.display = 'block';
     }
 
-    function calculatePoints() {
-        // Reset and Calculate based on inputs
+    function addTeamRow(id, name) {
+        const entryBody = document.getElementById('entryBody');
+        entryBody.innerHTML += `
+            <tr id="row-${id}">
+                <td><input type="text" value="${name}" id="name-${id}" style="width: 120px;"></td>
+                <td><input type="number" id="rank-${id}" min="1" value="11"></td>
+                <td><input type="number" id="kills-${id}" min="0" value="0"></td>
+                <td id="total-${id}" style="font-weight:bold;">0</td>
+            </tr>
+        `;
+    }
+
+    function processMap() {
+        let logText = `<strong>MAP ${currentMap} Results:</strong><br>`;
+        
         teams.forEach((t, index) => {
             const i = index + 1;
-            const rank = parseInt(document.getElementById(`rank-${i}`).value);
-            const kills = parseInt(document.getElementById(`kills-${i}`).value);
-            const pPoints = placementPoints[rank] || 0;
-            
+            const r = parseInt(document.getElementById(`rank-${i}`).value);
+            const k = parseInt(document.getElementById(`kills-${i}`).value);
+            const p = placementPoints[r] || 0;
+            const mapTotal = p + k;
+
             t.name = document.getElementById(`name-${i}`).value;
-            // Add current match points to their running total
-            t.totalPoints += (pPoints + kills);
-            
-            // Clear inputs for next map entry
+            t.totalPoints += mapTotal;
+
+            if (mapTotal > 0) {
+                logText += `${t.name}: +${mapTotal}pts (Rank ${r}, ${k} kills)<br>`;
+            }
+
+            // Update UI Total column
+            document.getElementById(`total-${i}`).innerText = t.totalPoints;
+            // Clear inputs
             document.getElementById(`rank-${i}`).value = 11;
             document.getElementById(`kills-${i}`).value = 0;
         });
 
-        renderLeaderboard();
+        addToHistory(logText);
+        updatePodium();
         sendDiscord();
-    }
-
-    function renderLeaderboard() {
-        const lbBody = document.getElementById('leaderboardBody');
-        teams.sort((a, b) => b.totalPoints - a.totalPoints);
         
-        lbBody.innerHTML = '';
-        teams.forEach((t, index) => {
-            let status = "";
-            let rowClass = "";
-            if (index === 0) { status = "🏆 CHAMPION"; rowClass = "top-3"; }
-            else if (index === 1) { status = "🥈 2nd PLACE"; rowClass = "top-3"; }
-            else if (index === 2) { status = "🥉 3rd PLACE"; rowClass = "top-3"; }
-
-            lbBody.innerHTML += `
-                <tr class="${rowClass}">
-                    <td class="${index < 3 ? 'rank-highlight' : ''}">${index + 1}</td>
-                    <td>${t.name}</td>
-                    <td>${t.totalPoints}</td>
-                    <td style="font-size: 0.8em;">${status}</td>
-                </tr>
-            `;
-        });
+        currentMap++;
+        document.getElementById('mapCounter').innerText = `MAP ${currentMap}`;
     }
 
-    function saveToLocal() {
-        localStorage.setItem('tournamentData', JSON.stringify(teams));
-        alert("Progress saved to your browser!");
+    function updatePodium() {
+        const sorted = [...teams].sort((a, b) => b.totalPoints - a.totalPoints);
+        const pUI = document.getElementById('podiumUI');
+        
+        if (sorted.length >= 3) {
+            pUI.innerHTML = `
+                <div class="silver">🥈 2nd: ${sorted[1].name} (${sorted[1].totalPoints})</div>
+                <div class="gold">🥇 CHAMPION: ${sorted[0].name} (${sorted[0].totalPoints})</div>
+                <div class="bronze">🥉 3rd: ${sorted[2].name} (${sorted[2].totalPoints})</div>
+            `;
+        }
+    }
+
+    function addToHistory(html) {
+        const log = document.getElementById('historyLog');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = html;
+        log.prepend(entry);
     }
 
     async function sendDiscord() {
-        let content = `**📊 TOURNAMENT UPDATE - ${new Date().toLocaleString()}**\n----------------------------------\n`;
-        teams.slice(0, 10).forEach((t, i) => {
-            let medal = i === 0 ? "🥇 " : i === 1 ? "🥈 " : i === 2 ? "🥉 " : "🔹 ";
-            content += `${medal}**${t.name}**: ${t.totalPoints} pts\n`;
+        const sorted = [...teams].sort((a, b) => b.totalPoints - a.totalPoints).slice(0, 10);
+        let content = `**🏆 STANDINGS AFTER MAP ${currentMap}**\n`;
+        
+        sorted.forEach((t, i) => {
+            let icon = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "▪️";
+            content += `${icon} **${t.name}**: ${t.totalPoints} total pts\n`;
         });
 
-        try {
-            await fetch(DISCORD_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: content })
-            });
-            alert("Leaderboard updated and sent to Discord!");
-        } catch (e) {
-            alert("Error sending to Discord. Check your connection.");
+        await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: content })
+        });
+    }
+
+    function fullReset() {
+        if(confirm("Wipe all data and restart from Map 1?")) {
+            currentMap = 1;
+            document.getElementById('mapCounter').innerText = "MAP 1";
+            document.getElementById('historyLog').innerHTML = "";
+            setupTeams();
+            updatePodium();
         }
     }
 </script>
-
 </body>
 </html>
