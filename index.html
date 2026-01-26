@@ -5,82 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pro Tournament Scorer</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; padding: 20px; }
-        .container { max-width: 1100px; margin: auto; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #333; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #7289da; padding-bottom: 15px; margin-bottom: 20px; }
-        .map-badge { background: #7289da; padding: 8px 20px; border-radius: 5px; font-weight: bold; font-size: 1.1em; }
+        :root { --discord-blurple: #7289da; --gold: #f1c40f; --silver: #bdc3c7; --bronze: #cd7f32; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 20px; transition: 0.3s; }
+        .container { max-width: 1100px; margin: auto; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #333; position: relative; }
         
-        /* Layout Grid */
-        .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--discord-blurple); padding-bottom: 15px; margin-bottom: 20px; }
+        .map-badge { background: var(--discord-blurple); padding: 8px 20px; border-radius: 5px; font-weight: bold; font-size: 1.1em; }
         
-        table { width: 100%; border-collapse: collapse; background: #252525; margin-bottom: 10px; }
-        th, td { padding: 10px; border: 1px solid #333; text-align: center; }
-        th { background: #111; color: #7289da; font-size: 0.85em; text-transform: uppercase; }
+        .main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; background: #252525; margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; border: 1px solid #333; text-align: center; }
+        th { background: #111; color: var(--discord-blurple); font-size: 0.85em; text-transform: uppercase; }
 
-        .winners-box { background: #2d2d2d; padding: 15px; border-radius: 8px; border: 1px solid #f1c40f; margin-bottom: 20px; }
-        .podium { display: flex; justify-content: space-around; text-align: center; margin-top: 10px; }
-        .gold { color: #f1c40f; } .silver { color: #bdc3c7; } .bronze { color: #cd7f32; }
+        .winners-box { background: linear-gradient(145deg, #2d2d2d, #1a1a1a); padding: 20px; border-radius: 8px; border: 1px solid var(--gold); margin-bottom: 20px; text-align: center;}
+        .podium { display: flex; justify-content: space-around; align-items: flex-end; margin-top: 10px; }
+        .gold { color: var(--gold); font-size: 1.5em; font-weight: bold; } 
+        .silver { color: var(--silver); font-size: 1.2em; } 
+        .bronze { color: var(--bronze); font-size: 1.1em; }
 
-        .history-log { background: #111; padding: 15px; border-radius: 8px; height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.9em; border: 1px solid #333; }
-        .log-entry { border-bottom: 1px solid #222; padding: 5px 0; color: #aaa; }
+        .history-log { background: #111; padding: 15px; border-radius: 8px; height: 400px; overflow-y: auto; font-family: monospace; font-size: 0.85em; border: 1px solid #333; }
+        .log-entry { border-bottom: 1px solid #222; padding: 8px 0; color: #888; text-align: left; }
 
         input { background: #333; color: white; border: 1px solid #444; padding: 5px; border-radius: 3px; width: 60px; }
-        .btn { padding: 12px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; transition: 0.3s; }
+        .btn { padding: 10px 18px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; transition: 0.2s; text-transform: uppercase; font-size: 0.8em; }
         .btn-update { background: #27ae60; color: white; width: 100%; margin-top: 10px; font-size: 1em; }
-        .btn-reset { background: #c0392b; color: white; font-size: 0.8em; }
+        .btn-ss { background: #9b59b6; color: white; }
+        .btn-reset { background: #c0392b; color: white; }
         
-        .top-row { background: rgba(114, 137, 218, 0.1); }
+        /* SCREENSHOT MODE STYLES */
+        body.ss-mode { background: #000; padding: 40px; }
+        body.ss-mode .no-ss, body.ss-mode .history-sidebar, body.ss-mode input { display: none !important; }
+        body.ss-mode .main-grid { grid-template-columns: 1fr; }
+        body.ss-mode .container { border-color: var(--discord-blurple); box-shadow: 0 0 40px rgba(114, 137, 218, 0.2); }
+        #exitSS { display: none; position: fixed; top: 10px; right: 10px; z-index: 1000; background: #e74c3c; }
+        body.ss-mode #exitSS { display: block; }
     </style>
 </head>
 <body>
 
+<button id="exitSS" class="btn" onclick="toggleScreenshot()">✕ Exit Screenshot Mode</button>
+
 <div class="container">
     <div class="header">
         <div>
-            <h2>🏆 Tournament Master</h2>
-            <span id="dateTime"></span>
+            <h2 style="margin:0;">🏆 TOURNAMENT STANDINGS</h2>
+            <span id="dateTime" style="font-size: 0.8em; color: #777;"></span>
         </div>
         <div id="mapCounter" class="map-badge">MAP 1</div>
     </div>
 
     <div class="winners-box">
-        <h3 style="margin:0; text-align: center;">⭐ CURRENT TOP 3 (Combined Points) ⭐</h3>
+        <h3 style="margin:0; color: var(--gold); letter-spacing: 2px;">⭐ TOP 3 WINNERS ⭐</h3>
         <div class="podium" id="podiumUI">
             <div class="silver">🥈 2nd: ---</div>
-            <div class="gold" style="font-size: 1.4em;">🥇 CHAMPION: ---</div>
+            <div class="gold">🥇 CHAMPION: ---</div>
             <div class="bronze">🥉 3rd: ---</div>
         </div>
     </div>
 
     <div class="main-grid">
-        <div>
-            <div style="margin-bottom: 15px;">
-                <label>Teams:</label>
-                <input type="number" id="teamCount" value="20" style="width: 40px;">
-                <button onclick="setupTeams()" class="btn" style="background: #3498db; color: white; padding: 5px 10px;">Set Lobby</button>
-                <button onclick="fullReset()" class="btn btn-reset" style="float: right;">Full Reset</button>
+        <div class="table-section">
+            <div class="no-ss" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <label>Teams:</label>
+                    <input type="number" id="teamCount" value="20">
+                    <button onclick="setupTeams()" class="btn" style="background: #3498db; color: white; padding: 5px 10px;">Init</button>
+                </div>
+                <div>
+                    <button onclick="toggleScreenshot()" class="btn btn-ss">📸 Screenshot Mode</button>
+                    <button onclick="fullReset()" class="btn btn-reset">Reset</button>
+                </div>
             </div>
 
             <div id="setupSection" style="display:none;">
-                <table>
+                <table id="mainTable">
                     <thead>
                         <tr>
+                            <th>Rank</th>
                             <th>Team Name</th>
-                            <th>Rank (1-10)</th>
-                            <th>Kills</th>
-                            <th>Current Total</th>
+                            <th class="no-ss">Rank</th>
+                            <th class="no-ss">Kills</th>
+                            <th>Total Points</th>
                         </tr>
                     </thead>
                     <tbody id="entryBody"></tbody>
                 </table>
-                <button class="btn btn-update" onclick="processMap()">RECORD MAP & SYNC DISCORD</button>
+                <button class="btn btn-update no-ss" onclick="processMap()">Update Map & Sync Discord</button>
             </div>
         </div>
 
-        <div>
-            <h3>📜 History Log</h3>
+        <div class="history-sidebar">
+            <h3 style="margin-top:0;">📜 History Log</h3>
             <div class="history-log" id="historyLog">
-                <div class="log-entry">Waiting for Match 1...</div>
+                <div class="log-entry">Awaiting Map 1...</div>
             </div>
         </div>
     </div>
@@ -93,59 +111,54 @@
     let currentMap = 1;
     const placementPoints = { 1:10, 2:8, 3:6, 4:4, 5:4, 6:2, 7:1, 8:1, 9:1, 10:1 };
 
-    function updateTime() {
-        document.getElementById('dateTime').innerText = new Date().toLocaleString();
-    }
-    setInterval(updateTime, 1000);
+    function toggleScreenshot() { document.body.classList.toggle('ss-mode'); }
 
     function setupTeams() {
         const count = document.getElementById('teamCount').value;
         const entryBody = document.getElementById('entryBody');
         entryBody.innerHTML = '';
         teams = [];
-
         for (let i = 1; i <= count; i++) {
             teams.push({ name: `Team ${i}`, totalPoints: 0 });
-            addTeamRow(i, `Team ${i}`);
+            renderRow(i, `Team ${i}`, 0);
         }
         document.getElementById('setupSection').style.display = 'block';
     }
 
-    function addTeamRow(id, name) {
-        const entryBody = document.getElementById('entryBody');
-        entryBody.innerHTML += `
-            <tr id="row-${id}">
-                <td><input type="text" value="${name}" id="name-${id}" style="width: 120px;"></td>
-                <td><input type="number" id="rank-${id}" min="1" value="11"></td>
-                <td><input type="number" id="kills-${id}" min="0" value="0"></td>
-                <td id="total-${id}" style="font-weight:bold;">0</td>
+    function renderRow(displayRank, name, points) {
+        document.getElementById('entryBody').innerHTML += `
+            <tr>
+                <td>${displayRank}</td>
+                <td><input type="text" value="${name}" class="team-name-input" data-idx="${displayRank-1}" style="width: 140px; border:none; background:transparent;"></td>
+                <td class="no-ss"><input type="number" class="map-rank" placeholder="Rank" value="11"></td>
+                <td class="no-ss"><input type="number" class="map-kills" placeholder="Kills" value="0"></td>
+                <td style="font-weight:bold; color: #27ae60;">${points}</td>
             </tr>
         `;
     }
 
     function processMap() {
-        let logText = `<strong>MAP ${currentMap} Results:</strong><br>`;
-        
-        teams.forEach((t, index) => {
-            const i = index + 1;
-            const r = parseInt(document.getElementById(`rank-${i}`).value);
-            const k = parseInt(document.getElementById(`kills-${i}`).value);
+        const nameInputs = document.querySelectorAll('.team-name-input');
+        const rankInputs = document.querySelectorAll('.map-rank');
+        const killInputs = document.querySelectorAll('.map-kills');
+        let logText = `<strong>MAP ${currentMap} UPDATE</strong><br>`;
+
+        teams.forEach((t, i) => {
+            const r = parseInt(rankInputs[i].value);
+            const k = parseInt(killInputs[i].value);
             const p = placementPoints[r] || 0;
-            const mapTotal = p + k;
+            const mapScore = p + k;
 
-            t.name = document.getElementById(`name-${i}`).value;
-            t.totalPoints += mapTotal;
-
-            if (mapTotal > 0) {
-                logText += `${t.name}: +${mapTotal}pts (Rank ${r}, ${k} kills)<br>`;
-            }
-
-            // Update UI Total column
-            document.getElementById(`total-${i}`).innerText = t.totalPoints;
-            // Clear inputs
-            document.getElementById(`rank-${i}`).value = 11;
-            document.getElementById(`kills-${i}`).value = 0;
+            t.name = nameInputs[i].value;
+            t.totalPoints += mapScore;
+            if (mapScore > 0) logText += `• ${t.name}: +${mapScore}pts<br>`;
         });
+
+        teams.sort((a, b) => b.totalPoints - a.totalPoints);
+        
+        // Refresh Table
+        document.getElementById('entryBody').innerHTML = '';
+        teams.forEach((t, i) => renderRow(i + 1, t.name, t.totalPoints));
 
         addToHistory(logText);
         updatePodium();
@@ -153,17 +166,16 @@
         
         currentMap++;
         document.getElementById('mapCounter').innerText = `MAP ${currentMap}`;
+        document.getElementById('dateTime').innerText = "Last Updated: " + new Date().toLocaleString();
     }
 
     function updatePodium() {
-        const sorted = [...teams].sort((a, b) => b.totalPoints - a.totalPoints);
         const pUI = document.getElementById('podiumUI');
-        
-        if (sorted.length >= 3) {
+        if (teams.length >= 3) {
             pUI.innerHTML = `
-                <div class="silver">🥈 2nd: ${sorted[1].name} (${sorted[1].totalPoints})</div>
-                <div class="gold">🥇 CHAMPION: ${sorted[0].name} (${sorted[0].totalPoints})</div>
-                <div class="bronze">🥉 3rd: ${sorted[2].name} (${sorted[2].totalPoints})</div>
+                <div class="silver">🥈 2nd: ${teams[1].name} <br> <span style="font-size:0.6em;">${teams[1].totalPoints} PTS</span></div>
+                <div class="gold">🥇 CHAMPION: ${teams[0].name} <br> <span style="font-size:0.6em;">${teams[0].totalPoints} PTS</span></div>
+                <div class="bronze">🥉 3rd: ${teams[2].name} <br> <span style="font-size:0.6em;">${teams[2].totalPoints} PTS</span></div>
             `;
         }
     }
@@ -177,23 +189,17 @@
     }
 
     async function sendDiscord() {
-        const sorted = [...teams].sort((a, b) => b.totalPoints - a.totalPoints).slice(0, 10);
-        let content = `**🏆 STANDINGS AFTER MAP ${currentMap}**\n`;
-        
-        sorted.forEach((t, i) => {
-            let icon = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "▪️";
-            content += `${icon} **${t.name}**: ${t.totalPoints} total pts\n`;
+        const top10 = teams.slice(0, 10);
+        let content = `**📍 FINAL STANDINGS - MAP ${currentMap-1}**\n`;
+        top10.forEach((t, i) => {
+            let icon = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🔹";
+            content += `${icon} **${t.name}**: ${t.totalPoints} pts\n`;
         });
-
-        await fetch(DISCORD_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: content })
-        });
+        try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) }); } catch (e) {}
     }
 
     function fullReset() {
-        if(confirm("Wipe all data and restart from Map 1?")) {
+        if(confirm("Wipe all data?")) {
             currentMap = 1;
             document.getElementById('mapCounter').innerText = "MAP 1";
             document.getElementById('historyLog').innerHTML = "";
