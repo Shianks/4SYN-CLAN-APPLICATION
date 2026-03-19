@@ -38,67 +38,67 @@
             position: relative;
         }
 
-        /* --- GLASS TOOLTIP CSS --- */
-        .tooltip {
+        /* --- GLASS TOOLTIP / PERKS CSS --- */
+        .option-card {
             position: relative;
-            display: inline-block;
-            cursor: help;
-            color: var(--primary-gold);
-            font-weight: bold;
-            text-decoration: underline dotted;
-            margin-left: 5px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .tooltip .tooltiptext {
+        .option-card:hover {
+            border-color: var(--primary-gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .option-card .tooltiptext {
             visibility: hidden;
-            width: 260px;
-            background: rgba(255, 255, 255, 0.07); /* Transparent white */
-            backdrop-filter: blur(12px);          /* Glass blur */
+            width: 250px;
+            background: rgba(20, 20, 20, 0.7); /* Darker glass for contrast */
+            backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             color: #fff;
             text-align: left;
             border-radius: 12px;
             padding: 15px;
             position: absolute;
-            z-index: 10;
-            bottom: 150%; 
+            z-index: 99;
+            bottom: 115%; /* Positions it above the card */
             left: 50%;
-            margin-left: -130px;
+            transform: translateX(-50%) translateY(10px);
             opacity: 0;
             transition: all 0.4s ease;
-            transform: translateY(10px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-            font-size: 0.8rem;
-            line-height: 1.5;
-            pointer-events: none;
+            border: 1px solid var(--primary-gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 10px var(--gold-glow);
+            pointer-events: none; /* User can click through it to hit IGN fields */
         }
 
-        /* Tooltip Arrow */
-        .tooltip .tooltiptext::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: rgba(212, 175, 55, 0.3) transparent transparent transparent;
-        }
-
-        .tooltip:hover .tooltiptext {
+        .option-card:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(0);
         }
 
         .perks-list {
-            margin: 0;
+            margin: 10px 0 0 0;
             padding-left: 15px;
             list-style-type: '⚡ ';
+            font-size: 0.75rem;
+            text-transform: none; /* Makes list readable */
+            line-height: 1.6;
         }
-        /* ------------------------- */
 
+        /* --- FORM STYLING --- */
         .logo-container { text-align: center; margin-bottom: 20px; }
         .logo-container img { max-width: 120px; filter: drop-shadow(0 0 10px var(--primary-gold)); }
 
@@ -136,22 +136,16 @@
             font-size: 1rem;
         }
 
-        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        .option-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            background: rgba(45, 45, 45, 0.9);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
 
-        .option-card:hover { border-color: var(--primary-gold); background: rgba(212, 175, 55, 0.05); }
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        input[type="radio"] { accent-color: var(--primary-gold); margin-right: 10px; }
 
         button {
             width: 100%;
@@ -197,36 +191,32 @@
             <div class="option-grid">
                 <label class="option-card">
                     <input type="radio" name="playstyle" value="Competitive" required> 
-                    Competitive 
-                    <span class="tooltip">(?)
-                        <span class="tooltiptext">
-                            <strong style="color:var(--primary-gold)">Competitive Perks:</strong><br>
-                            <ul class="perks-list">
-                                <li>Daily scrimmages</li>
-                                <li>Monthly cash/gold rewards</li>
-                                <li>Active teammates & rank push</li>
-                                <li>Clan tournaments & events</li>
-                                <li>Friendly & non-toxic community</li>
-                            </ul>
-                        </span>
-                    </span>
+                    Competitive
+                    <div class="tooltiptext">
+                        <strong style="color:var(--primary-gold); font-size: 0.85rem;">COMPETITIVE PERKS:</strong>
+                        <ul class="perks-list">
+                            <li>Daily scrimmages</li>
+                            <li>Monthly cash/gold rewards</li>
+                            <li>Active teammates & rank push</li>
+                            <li>Clan tournaments & events</li>
+                            <li>Friendly & non-toxic community</li>
+                        </ul>
+                    </div>
                 </label>
                 
                 <label class="option-card">
                     <input type="radio" name="playstyle" value="Casual"> 
                     Casual
-                    <span class="tooltip">(?)
-                        <span class="tooltiptext">
-                            <strong style="color:var(--primary-gold)">Casual Perks:</strong><br>
-                            <ul class="perks-list">
-                                <li>Improve skills & play with better teammates</li>
-                                <li>Respectful community</li>
-                                <li>Supportive environment</li>
-                                <li>Monthly clan events with prizes</li>
-                                <li>Make new friends</li>
-                            </ul>
-                        </span>
-                    </span>
+                    <div class="tooltiptext">
+                        <strong style="color:var(--primary-gold); font-size: 0.85rem;">CASUAL PERKS:</strong>
+                        <ul class="perks-list">
+                            <li>Improve skills with teammates</li>
+                            <li>Respectful community</li>
+                            <li>Supportive environment</li>
+                            <li>Monthly clan events with prizes</li>
+                            <li>Make new friends & build teams</li>
+                        </ul>
+                    </div>
                 </label>
             </div>
         </div>
@@ -255,7 +245,7 @@
         <div class="form-group">
             <label>Working Microphone? <span class="required-star">*</span></label>
             <select id="hasMic" required>
-                <option value="" disabled selected>Choose an option...</option>
+                <option value="" disabled selected>Choose...</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
                 <option value="Listen Only">I can listen only</option>
@@ -275,6 +265,7 @@
 
 <script>
     const webhookURL = "https://discord.com/api/webhooks/1454879705768525865/zsvUUI2W1wteTuVcQBf077wzxMhrLgByTAA525-l-O-9pRHKzT0RMI1J2RMmrLRuQ7Os";
+
     document.getElementById('recruitmentForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
@@ -293,9 +284,7 @@
             age: document.getElementById('age').value,
             nat: document.getElementById('nationality').value,
             mic: document.getElementById('hasMic').value,
-            why: document.getElementById('whyJoin').value,
-            prev: "None",
-            tag: "Immediately"
+            why: document.getElementById('whyJoin').value
         };
 
         const params = {
