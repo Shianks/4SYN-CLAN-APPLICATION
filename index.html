@@ -3,246 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Tournament Scorer</title>
+    <title>4SYN | Recruitment</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; padding: 20px; transition: 0.3s; }
-        .container { max-width: 1100px; margin: auto; background: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #333; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #7289da; padding-bottom: 15px; margin-bottom: 20px; }
-        .map-badge { background: #7289da; padding: 8px 20px; border-radius: 5px; font-weight: bold; font-size: 1.1em; }
-        
-        /* Layout Grid */
-        .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
-        
-        table { width: 100%; border-collapse: collapse; background: #252525; margin-bottom: 10px; }
-        th, td { padding: 10px; border: 1px solid #333; text-align: center; }
-        th { background: #111; color: #7289da; font-size: 0.85em; text-transform: uppercase; }
-
-        .winners-box { background: #2d2d2d; padding: 15px; border-radius: 8px; border: 1px solid #f1c40f; margin-bottom: 20px; }
-        .podium { display: flex; justify-content: space-around; text-align: center; margin-top: 10px; }
-        .gold { color: #f1c40f; font-weight: bold; } .silver { color: #bdc3c7; } .bronze { color: #cd7f32; }
-
-        .history-log { background: #111; padding: 15px; border-radius: 8px; height: 350px; overflow-y: auto; font-family: monospace; font-size: 0.9em; border: 1px solid #333; }
-        .log-entry { border-bottom: 1px solid #222; padding: 5px 0; color: #aaa; }
-
-        /* Remove Arrows/Spinners from Number Inputs */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
+        :root {
+            --primary-gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --accent-red: #8b0000;
+            --dark-bg: #0a0a0a;
+            --glass: rgba(15, 15, 15, 0.92);
         }
-        input[type=number] { -moz-appearance: textfield; } /* Firefox */
 
-        input { background: #333; color: white; border: 1px solid #444; padding: 8px; border-radius: 4px; width: 60px; text-align: center; }
-        .team-input { width: 150px; text-align: left; }
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(139, 0, 0, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 40%);
+            color: #e0e0e0;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
 
-        .btn { padding: 12px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; transition: 0.3s; }
-        .btn-update { background: #27ae60; color: white; width: 100%; margin-top: 10px; font-size: 1em; }
-        .btn-reset { background: #c0392b; color: white; font-size: 0.8em; }
-        .btn-ss { background: #9b59b6; color: white; margin-left: 10px; }
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            max-width: 550px;
+            width: 100%;
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 15px var(--gold-glow);
+            position: relative;
+        }
 
-        /* Screenshot Mode Hide */
-        .ss-hidden { display: block; }
-        body.screenshot-mode { background: #000; }
-        body.screenshot-mode .ss-hidden { display: none !important; }
-        body.screenshot-mode .container { border: 2px solid #7289da; width: 800px; }
-        body.screenshot-mode .main-grid { grid-template-columns: 1fr; }
-        
-        #exitSS { display: none; position: fixed; top: 10px; right: 10px; background: #e74c3c; z-index: 1000; }
-        body.screenshot-mode #exitSS { display: block; }
+        /* --- GLASS TOOLTIP CSS --- */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: var(--primary-gold);
+            font-weight: bold;
+            text-decoration: underline dotted;
+            margin-left: 5px;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 260px;
+            background: rgba(255, 255, 255, 0.07); /* Transparent white */
+            backdrop-filter: blur(12px);          /* Glass blur */
+            -webkit-backdrop-filter: blur(12px);
+            color: #fff;
+            text-align: left;
+            border-radius: 12px;
+            padding: 15px;
+            position: absolute;
+            z-index: 10;
+            bottom: 150%; 
+            left: 50%;
+            margin-left: -130px;
+            opacity: 0;
+            transition: all 0.4s ease;
+            transform: translateY(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            font-size: 0.8rem;
+            line-height: 1.5;
+            pointer-events: none;
+        }
+
+        /* Tooltip Arrow */
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(212, 175, 55, 0.3) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .perks-list {
+            margin: 0;
+            padding-left: 15px;
+            list-style-type: '⚡ ';
+        }
+        /* ------------------------- */
+
+        .logo-container { text-align: center; margin-bottom: 20px; }
+        .logo-container img { max-width: 120px; filter: drop-shadow(0 0 10px var(--primary-gold)); }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-gold);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            font-weight: 800;
+        }
+
+        .form-group { margin-bottom: 25px; }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-gold);
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 14px;
+            background: rgba(30, 30, 30, 0.7);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: white;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-card:hover { border-color: var(--primary-gold); background: rgba(212, 175, 55, 0.05); }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            margin-top: 20px;
+            background: transparent;
+            color: white;
+            border: 2px solid var(--primary-gold);
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.4s;
+        }
+
+        button:hover { background: var(--primary-gold); color: black; box-shadow: 0 0 20px var(--primary-gold); }
+
+        .footer-text { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 30px; letter-spacing: 1px; }
+        .required-star { color: #ff4d4d; margin-left: 3px; }
     </style>
 </head>
 <body>
 
-<button id="exitSS" class="btn" onclick="toggleSS()">Exit Screenshot Mode</button>
-
 <div class="container">
-    <div class="header">
-        <div>
-            <h2>🏆 Tournament Master</h2>
-            <span id="dateTime"></span>
-        </div>
-        <div id="mapCounter" class="map-badge">MAP 1</div>
+    <div class="logo-container">
+        <img src="clan.jpg" alt="4SYN Logo">
     </div>
+    
+    <h1>4SYN Recruitment</h1>
 
-    <div class="winners-box">
-        <h3 style="margin:0; text-align: center;">⭐ TOP 3 STANDINGS ⭐</h3>
-        <div class="podium" id="podiumUI">
-            <div class="silver">🥈 2nd: ---</div>
-            <div class="gold" style="font-size: 1.4em;">🥇 CHAMPION: ---</div>
-            <div class="bronze">🥉 3rd: ---</div>
-        </div>
-    </div>
-
-    <div class="main-grid">
-        <div>
-            <div class="ss-hidden" style="margin-bottom: 15px;">
-                <label>Teams:</label>
-                <input type="number" id="teamCount" value="20">
-                <button onclick="setupTeams()" class="btn" style="background: #3498db; color: white; padding: 8px 15px;">Set Lobby</button>
-                <button onclick="toggleSS()" class="btn btn-ss">📸 Screenshot Mode</button>
-                <button onclick="fullReset()" class="btn btn-reset" style="float: right;">Full Reset</button>
-            </div>
-
-            <div id="setupSection" style="display:none;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="ss-mode-rank">Rank</th>
-                            <th>Team Name</th>
-                            <th class="ss-hidden">Rank (1-10)</th>
-                            <th class="ss-hidden">Kills</th>
-                            <th>Total Points</th>
-                        </tr>
-                    </thead>
-                    <tbody id="entryBody"></tbody>
-                </table>
-                <button class="btn btn-update ss-hidden" onclick="processMap()">RECORD MAP & SYNC DISCORD</button>
+    <form id="recruitmentForm">
+        <div class="form-group">
+            <label>In-Game Name & UID <span class="required-star">*</span></label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="ign" placeholder="IGN" style="width: 50%;" required>
+                <input type="text" id="uid" placeholder="Game UID" style="width: 50%;" required>
             </div>
         </div>
 
-        <div class="history-sidebar ss-hidden">
-            <h3>📜 History Log</h3>
-            <div class="history-log" id="historyLog">
-                <div class="log-entry">Waiting for Match 1...</div>
+        <div class="form-group">
+            <label>Playstyle <span class="required-star">*</span></label>
+            <div class="option-grid">
+                <label class="option-card">
+                    <input type="radio" name="playstyle" value="Competitive" required> 
+                    Competitive 
+                    <span class="tooltip">(?)
+                        <span class="tooltiptext">
+                            <strong style="color:var(--primary-gold)">Competitive Perks:</strong><br>
+                            <ul class="perks-list">
+                                <li>Daily scrimmages</li>
+                                <li>Monthly cash/gold rewards</li>
+                                <li>Active teammates & rank push</li>
+                                <li>Clan tournaments & events</li>
+                                <li>Friendly & non-toxic community</li>
+                            </ul>
+                        </span>
+                    </span>
+                </label>
+                
+                <label class="option-card">
+                    <input type="radio" name="playstyle" value="Casual"> 
+                    Casual
+                    <span class="tooltip">(?)
+                        <span class="tooltiptext">
+                            <strong style="color:var(--primary-gold)">Casual Perks:</strong><br>
+                            <ul class="perks-list">
+                                <li>Improve skills & play with better teammates</li>
+                                <li>Respectful community</li>
+                                <li>Supportive environment</li>
+                                <li>Monthly clan events with prizes</li>
+                                <li>Make new friends</li>
+                            </ul>
+                        </span>
+                    </span>
+                </label>
             </div>
         </div>
-    </div>
+
+        <div class="form-group">
+            <label>Platform <span class="required-star">*</span></label>
+            <div class="option-grid">
+                <label class="option-card"><input type="radio" name="platform" value="PC" required> PC</label>
+                <label class="option-card"><input type="radio" name="platform" value="Mobile"> Mobile</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Discord Username <span class="required-star">*</span></label>
+            <input type="text" id="discordUser" placeholder="e.g. username" required>
+        </div>
+
+        <div class="form-group">
+            <label>Age & Nationality <span class="required-star">*</span></label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="age" placeholder="Age" style="width: 30%;" required>
+                <input type="text" id="nationality" placeholder="Nationality" style="width: 70%;" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Working Microphone? <span class="required-star">*</span></label>
+            <select id="hasMic" required>
+                <option value="" disabled selected>Choose an option...</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Listen Only">I can listen only</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Why do you want to join 4SYN? <span class="required-star">*</span></label>
+            <textarea id="whyJoin" rows="3" placeholder="Tell us about yourself..." required></textarea>
+        </div>
+
+        <button type="submit" id="submitBtn">Submit Application</button>
+    </form>
+    
+    <p class="footer-text">QUALIFIED APPLICANTS WILL BE CONTACTED VIA DISCORD</p>
 </div>
 
 <script>
-    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1465319966214717551/TJkxG_fCB0JRQqM2u8dgK3WhmMMERJE8SoZjiC_LHqmfdG1PCg6vgVGecztN0v8r77O4";
-    
-    let teams = [];
-    let currentMap = 1;
-    const placementPoints = { 1:10, 2:8, 3:6, 4:4, 5:4, 6:2, 7:1, 8:1, 9:1, 10:1 };
+    const webhookURL = "https://discord.com/api/webhooks/1454879705768525865/zsvUUI2W1wteTuVcQBf077wzxMhrLgByTAA525-l-O-9pRHKzT0RMI1J2RMmrLRuQ7Os";
+    document.getElementById('recruitmentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "TRANSMITTING...";
+        btn.disabled = true;
 
-    function updateTime() {
-        document.getElementById('dateTime').innerText = new Date().toLocaleString();
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
+        const platformValue = document.querySelector('input[name="platform"]:checked').value;
+        const playstyleValue = document.querySelector('input[name="playstyle"]:checked').value;
 
-    function toggleSS() {
-        document.body.classList.toggle('screenshot-mode');
-    }
+        const data = {
+            ign: document.getElementById('ign').value,
+            uid: document.getElementById('uid').value,
+            platform: platformValue,
+            playstyle: playstyleValue,
+            discord: document.getElementById('discordUser').value,
+            age: document.getElementById('age').value,
+            nat: document.getElementById('nationality').value,
+            mic: document.getElementById('hasMic').value,
+            why: document.getElementById('whyJoin').value,
+            prev: "None",
+            tag: "Immediately"
+        };
 
-    function setupTeams() {
-        const count = document.getElementById('teamCount').value;
-        const entryBody = document.getElementById('entryBody');
-        entryBody.innerHTML = '';
-        teams = [];
+        const params = {
+            username: "4SYN Recruitment Bot",
+            embeds: [{
+                title: "📜 NEW RECRUITMENT APPLICATION",
+                color: 13936183, 
+                fields: [
+                    { name: "👤 IGN", value: data.ign, inline: true },
+                    { name: "🆔 Game UID", value: data.uid, inline: true },
+                    { name: "⚔️ Playstyle", value: data.playstyle, inline: true },
+                    { name: "🎮 Platform", value: data.platform, inline: true },
+                    { name: "💬 Discord Username", value: data.discord, inline: true },
+                    { name: "🎂 Age", value: data.age, inline: true },
+                    { name: "🌍 Nationality", value: data.nat, inline: true },
+                    { name: "🎙️ Microphone", value: data.mic, inline: true },
+                    { name: "📝 Why 4SYN?", value: data.why }
+                ],
+                footer: { text: "4SYN Clan Management System" },
+                timestamp: new Date()
+            }]
+        };
 
-        for (let i = 1; i <= count; i++) {
-            teams.push({ name: `Team ${i}`, totalPoints: 0 });
-            addTeamRow(i, `Team ${i}`);
-        }
-        document.getElementById('setupSection').style.display = 'block';
-    }
-
-    function addTeamRow(id, name) {
-        const entryBody = document.getElementById('entryBody');
-        entryBody.innerHTML += `
-            <tr id="row-${id}">
-                <td class="display-rank">${id}</td>
-                <td><input type="text" value="${name}" id="name-${id}" class="team-input"></td>
-                <td class="ss-hidden"><input type="number" id="rank-${id}" placeholder="0"></td>
-                <td class="ss-hidden"><input type="number" id="kills-${id}" placeholder="0"></td>
-                <td id="total-${id}" style="font-weight:bold; color:#27ae60;">0</td>
-            </tr>
-        `;
-    }
-
-    function processMap() {
-        let logText = `<strong>MAP ${currentMap} Results:</strong><br>`;
-        
-        // 1. Calculate Points
-        teams.forEach((t, index) => {
-            const i = index + 1;
-            const rVal = document.getElementById(`rank-${i}`).value;
-            const kVal = document.getElementById(`kills-${i}`).value;
-            
-            const r = parseInt(rVal) || 0;
-            const k = parseInt(kVal) || 0;
-            const p = (r > 0 && r <= 10) ? placementPoints[r] : 0;
-            const mapTotal = p + k;
-
-            t.name = document.getElementById(`name-${i}`).value;
-            t.totalPoints += mapTotal;
-
-            if (mapTotal > 0) {
-                logText += `${t.name}: +${mapTotal}pts (Rank ${r}, ${k} kills)<br>`;
-            }
-
-            // Reset inputs
-            document.getElementById(`rank-${i}`).value = "";
-            document.getElementById(`kills-${i}`).value = "";
+        fetch(webhookURL, {
+            method: "POST",
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify(params)
+        }).then(res => {
+            alert("Application Sent Successfully! Good luck.");
+            location.reload();
+        }).catch(err => {
+            alert("Submission failed.");
+            btn.disabled = false;
+            btn.innerText = "Submit Application";
         });
-
-        // 2. Sort Teams by Total Points
-        teams.sort((a, b) => b.totalPoints - a.totalPoints);
-
-        // 3. Refresh Table and Podium
-        refreshUI();
-        addToHistory(logText);
-        sendDiscord();
-        
-        currentMap++;
-        document.getElementById('mapCounter').innerText = `MAP ${currentMap}`;
-    }
-
-    function refreshUI() {
-        const entryBody = document.getElementById('entryBody');
-        entryBody.innerHTML = '';
-        teams.forEach((t, index) => {
-            const i = index + 1;
-            entryBody.innerHTML += `
-                <tr>
-                    <td>${i}</td>
-                    <td><input type="text" value="${t.name}" id="name-${i}" class="team-input"></td>
-                    <td class="ss-hidden"><input type="number" id="rank-${i}" placeholder="0"></td>
-                    <td class="ss-hidden"><input type="number" id="kills-${i}" placeholder="0"></td>
-                    <td id="total-${i}" style="font-weight:bold; color:#27ae60;">${t.totalPoints}</td>
-                </tr>
-            `;
-        });
-
-        const pUI = document.getElementById('podiumUI');
-        if (teams.length >= 3) {
-            pUI.innerHTML = `
-                <div class="silver">🥈 2nd: ${teams[1].name} (${teams[1].totalPoints})</div>
-                <div class="gold" style="font-size: 1.4em;">🥇 CHAMPION: ${teams[0].name} (${teams[0].totalPoints})</div>
-                <div class="bronze">🥉 3rd: ${teams[2].name} (${teams[2].totalPoints})</div>
-            `;
-        }
-    }
-
-    function addToHistory(html) {
-        const log = document.getElementById('historyLog');
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerHTML = html;
-        log.prepend(entry);
-    }
-
-    async function sendDiscord() {
-        const sorted = [...teams].slice(0, 10);
-        let content = `**🏆 STANDINGS AFTER MAP ${currentMap}**\n`;
-        sorted.forEach((t, i) => {
-            let icon = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "▪️";
-            content += `${icon} **${t.name}**: ${t.totalPoints} total pts\n`;
-        });
-        await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) });
-    }
-
-    function fullReset() {
-        if(confirm("Wipe all data?")) {
-            currentMap = 1;
-            document.getElementById('mapCounter').innerText = "MAP 1";
-            document.getElementById('historyLog').innerHTML = "";
-            setupTeams();
-            document.getElementById('podiumUI').innerHTML = '<div class="silver">🥈 2nd: ---</div><div class="gold" style="font-size: 1.4em;">🥇 CHAMPION: ---</div><div class="bronze">🥉 3rd: ---</div>';
-        }
-    }
+    });
 </script>
+
 </body>
 </html>
