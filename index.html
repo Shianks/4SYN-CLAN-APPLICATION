@@ -107,7 +107,6 @@
             font-size: 1rem;
         }
 
-        /* --- TOOLTIP LOGIC --- */
         .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .option-card {
             position: relative;
@@ -168,6 +167,40 @@
         button#submitBtn:hover { background: var(--primary-gold); color: black; box-shadow: 0 0 20px var(--primary-gold); }
         .footer-text { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 30px; letter-spacing: 1px; }
         .required-star { color: #ff4d4d; margin-left: 3px; }
+
+        /* --- RULES POPUP STYLES --- */
+        #rules-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .rules-content {
+            background: #111;
+            border: 2px solid var(--primary-gold);
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px var(--gold-glow);
+            text-align: left;
+        }
+
+        .rules-content h2 { color: var(--primary-gold); text-align: center; margin-top: 0; text-transform: uppercase; }
+        .rules-list { list-style: none; padding: 0; margin: 20px 0; font-size: 0.9rem; }
+        .rules-list li { margin-bottom: 12px; padding-left: 25px; position: relative; }
+        .rules-list li::before { content: '◈'; position: absolute; left: 0; color: var(--primary-gold); }
+        
+        .modal-buttons { display: flex; gap: 15px; margin-top: 25px; }
+        .modal-btn { flex: 1; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; text-transform: uppercase; border: none; transition: 0.3s; }
+        .btn-decline { background: #333; color: #fff; }
+        .btn-agree { background: var(--primary-gold); color: #000; }
+        .btn-agree:hover { box-shadow: 0 0 15px var(--primary-gold); }
     </style>
 </head>
 <body>
@@ -176,7 +209,7 @@
     <div class="intro-content">
         <h2 class="intro-title">Absolute Synergy</h2>
         <p class="intro-text">
-            4SYN | 4SYNARIS is a highly competitive and community driven team in Bloodstrike. Known for its generosity and supportive environment, the clan fosters growth and excellence among its members. We hold high expectations for competitive players, emphasizing skill, teamwork, and dedication.
+            4SYN | 4SYNARIS is a highly competitive and community driven team in Bloodstrike. Known for its generosity and supportive environment, the clan fosters growth and excellence among its members.
         </p>
 
         <div class="leadership-grid">
@@ -186,6 +219,26 @@
         </div>
 
         <button class="btn-proceed" onclick="enterRecruitment()">Proceed to join 4SYNARIS</button>
+    </div>
+</div>
+
+<div id="rules-modal">
+    <div class="rules-content">
+        <h2>Clan & House Rules</h2>
+        <ul class="rules-list">
+            <li>Must be 17 years old and above (Maturity is key).</li>
+            <li>Must change name with our official clan tag.</li>
+            <li>Must be active in GC/DC and in-game.</li>
+            <li>Must have a working Microphone and Discord.</li>
+            <li>Respect the CM, VCM, and all members at all times.</li>
+            <li>Zero tolerance for Toxicity and Dual Clanning.</li>
+            <li>Play with honor; you represent the House.</li>
+        </ul>
+        <p style="font-size: 0.8rem; color: #888; text-align: center;">By clicking agree, you acknowledge these rules.</p>
+        <div class="modal-buttons">
+            <button class="modal-btn btn-decline" onclick="closeRules()">Decline</button>
+            <button class="modal-btn btn-agree" onclick="confirmAndSubmit()">I Agree & Submit</button>
+        </div>
     </div>
 </div>
 
@@ -216,23 +269,11 @@
                             <li>Daily scrimmages</li>
                             <li>Monthly cash/gold rewards</li>
                             <li>Active teammates & rank push</li>
-                            <li>Clan tournaments & events</li>
-                            <li>Friendly & non-toxic community</li>
                         </ul>
                     </div>
                 </label>
                 <label class="option-card">
                     <input type="radio" name="playstyle" value="Casual"> Casual
-                    <div class="tooltiptext">
-                        <strong style="color:var(--primary-gold)">CASUAL PERKS:</strong>
-                        <ul class="perks-list">
-                            <li>Improve skills with teammates</li>
-                            <li>Respectful community</li>
-                            <li>Supportive environment</li>
-                            <li>Monthly clan events with prizes</li>
-                            <li>Make new friends</li>
-                        </ul>
-                    </div>
                 </label>
             </div>
         </div>
@@ -300,10 +341,24 @@
         setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
     }
 
+    const modal = document.getElementById('rules-modal');
+    const form = document.getElementById('recruitmentForm');
     const webhookURL = "https://discord.com/api/webhooks/1454879705768525865/zsvUUI2W1wteTuVcQBf077wzxMhrLgByTAA525-l-O-9pRHKzT0RMI1J2RMmrLRuQ7Os";
 
-    document.getElementById('recruitmentForm').addEventListener('submit', function(e) {
+    // 1. Intercept the form submit
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
+        modal.style.display = 'flex'; // Show the rules popup
+    });
+
+    // 2. Function if they decline
+    function closeRules() {
+        modal.style.display = 'none';
+    }
+
+    // 3. Final submission logic
+    function confirmAndSubmit() {
+        modal.style.display = 'none';
         const btn = document.getElementById('submitBtn');
         btn.innerText = "TRANSMITTING...";
         btn.disabled = true;
@@ -332,15 +387,15 @@
                     { name: "🆔 Game UID", value: data.uid, inline: true },
                     { name: "⚔️ Playstyle", value: data.playstyle, inline: true },
                     { name: "🎮 Platform", value: data.platform, inline: true },
-                    { name: "💬 Discord Username", value: data.discord, inline: true },
+                    { name: "💬 Discord", value: data.discord, inline: true },
                     { name: "🎂 Age", value: data.age, inline: true },
-                    { name: "🌍 Nationality", value: data.nat, inline: true },
-                    { name: "🎙️ Microphone", value: data.mic, inline: true },
+                    { name: "🌍 Nation", value: data.nat, inline: true },
+                    { name: "🎙️ Mic", value: data.mic, inline: true },
                     { name: "🏷️ Tag Ready", value: data.tag, inline: true },
                     { name: "🏰 Previous Clan", value: data.prev },
                     { name: "📝 Why 4SYN?", value: data.why }
                 ],
-                footer: { text: "4SYN Clan Management System" },
+                footer: { text: "4SYN Clan Management System • Rules Accepted" },
                 timestamp: new Date()
             }]
         };
@@ -350,14 +405,14 @@
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify(params)
         }).then(res => {
-            alert("Application Sent Successfully! Good luck.");
+            alert("Application Sent! Welcome to the consideration phase.");
             location.reload();
         }).catch(err => {
             alert("Submission failed.");
             btn.disabled = false;
             btn.innerText = "Submit Application";
         });
-    });
+    }
 </script>
 
 </body>
