@@ -10,7 +10,7 @@
             --gold-glow: rgba(212, 175, 55, 0.4);
             --accent-red: #8b0000;
             --dark-bg: #0a0a0a;
-            --glass: rgba(15, 15, 15, 0.95);
+            --glass: rgba(15, 15, 15, 0.92);
         }
 
         body {
@@ -21,7 +21,7 @@
             color: #e0e0e0;
             font-family: 'Inter', 'Segoe UI', sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
         }
@@ -52,7 +52,6 @@
             box-shadow: 0 0 30px rgba(0,0,0,1), 0 0 15px var(--gold-glow);
         }
 
-        .intro-logo { max-width: 100px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--primary-gold)); }
         .intro-title { color: var(--primary-gold); letter-spacing: 5px; text-transform: uppercase; font-size: 1.4rem; margin-bottom: 20px; }
         .intro-text { line-height: 1.8; font-size: 0.95rem; color: #ccc; margin-bottom: 30px; }
 
@@ -76,14 +75,13 @@
 
         .btn-proceed:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary-gold); }
 
-        /* --- MAIN FORM CONTAINER --- */
+        /* --- CONTAINER --- */
         .container {
             background: var(--glass);
             backdrop-filter: blur(15px);
             max-width: 550px;
             width: 100%;
             padding: 50px;
-            margin: 40px 20px;
             border-radius: 20px;
             border: 1px solid rgba(212, 175, 55, 0.3);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 15px var(--gold-glow);
@@ -109,14 +107,7 @@
             font-size: 1rem;
         }
 
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-gold);
-            background: rgba(45, 45, 45, 0.9);
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
-        }
-
-        /* --- TOOLTIP CARDS --- */
+        /* --- TOOLTIP LOGIC --- */
         .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .option-card {
             position: relative;
@@ -137,7 +128,7 @@
         .option-card .tooltiptext {
             visibility: hidden;
             width: 250px;
-            background: rgba(20, 20, 20, 0.85);
+            background: rgba(20, 20, 20, 0.9);
             backdrop-filter: blur(12px);
             color: #fff;
             text-align: left;
@@ -151,12 +142,10 @@
             opacity: 0;
             transition: all 0.4s ease;
             border: 1px solid var(--primary-gold);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             pointer-events: none;
         }
 
         .option-card:hover .tooltiptext { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
-
         .perks-list { margin: 8px 0 0 0; padding-left: 15px; list-style-type: '⚡ '; font-size: 0.75rem; text-transform: none; line-height: 1.5; }
 
         input[type="radio"] { accent-color: var(--primary-gold); margin-right: 10px; }
@@ -185,19 +174,18 @@
 
 <div id="intro-overlay">
     <div class="intro-content">
-        <img src="clan.jpg" class="intro-logo" alt="4SYN">
         <h2 class="intro-title">Absolute Synergy</h2>
         <p class="intro-text">
-            4SYN | 4SYNARIS is a premier, community-driven collective in Bloodstrike. Built on the pillars of <strong>Generosity, Growth, and Excellence</strong>, we provide an elite environment where skill meets brotherhood. We demand dedication, synchronized teamwork, and a drive for the top.
+            4SYN | 4SYNARIS is a highly competitive and community driven team in Bloodstrike. Known for its generosity and supportive environment, the clan fosters growth and excellence among its members. We hold high expectations for competitive players, emphasizing skill, teamwork, and dedication.
         </p>
 
         <div class="leadership-grid">
             <div class="leader-card"><span class="leader-role">Owner</span><span class="leader-name">Hisae</span></div>
-            <div class="leader-card"><span class="leader-role">Vice-Lead</span><span class="leader-name">Shianks</span></div>
+            <div class="leader-card"><span class="leader-role">Vice Leader</span><span class="leader-name">Shianks</span></div>
             <div class="leader-card"><span class="leader-role">Mod</span><span class="leader-name">Sushi</span></div>
         </div>
 
-        <button class="btn-proceed" onclick="enterRecruitment()">Ascend to 4SYN</button>
+        <button class="btn-proceed" onclick="enterRecruitment()">Proceed to join 4SYNARIS</button>
     </div>
 </div>
 
@@ -242,7 +230,7 @@
                             <li>Respectful community</li>
                             <li>Supportive environment</li>
                             <li>Monthly clan events with prizes</li>
-                            <li>Make new friends & build teams</li>
+                            <li>Make new friends</li>
                         </ul>
                     </div>
                 </label>
@@ -341,15 +329,16 @@
                 color: 13936183, 
                 fields: [
                     { name: "👤 IGN", value: data.ign, inline: true },
-                    { name: "🆔 UID", value: data.uid, inline: true },
-                    { name: "⚔️ Style", value: data.playstyle, inline: true },
+                    { name: "🆔 Game UID", value: data.uid, inline: true },
+                    { name: "⚔️ Playstyle", value: data.playstyle, inline: true },
                     { name: "🎮 Platform", value: data.platform, inline: true },
-                    { name: "💬 Discord", value: data.discord, inline: true },
+                    { name: "💬 Discord Username", value: data.discord, inline: true },
+                    { name: "🎂 Age", value: data.age, inline: true },
                     { name: "🌍 Nationality", value: data.nat, inline: true },
-                    { name: "🎙️ Mic", value: data.mic, inline: true },
-                    { name: "🏷️ Tag", value: data.tag, inline: true },
-                    { name: "🏰 Previous", value: data.prev },
-                    { name: "📝 Why?", value: data.why }
+                    { name: "🎙️ Microphone", value: data.mic, inline: true },
+                    { name: "🏷️ Tag Ready", value: data.tag, inline: true },
+                    { name: "🏰 Previous Clan", value: data.prev },
+                    { name: "📝 Why 4SYN?", value: data.why }
                 ],
                 footer: { text: "4SYN Clan Management System" },
                 timestamp: new Date()
@@ -360,11 +349,11 @@
             method: "POST",
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify(params)
-        }).then(() => {
-            alert("Application Sent Successfully!");
+        }).then(res => {
+            alert("Application Sent Successfully! Good luck.");
             location.reload();
-        }).catch(() => {
-            alert("Error sending application.");
+        }).catch(err => {
+            alert("Submission failed.");
             btn.disabled = false;
             btn.innerText = "Submit Application";
         });
