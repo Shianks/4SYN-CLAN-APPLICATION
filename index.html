@@ -27,13 +27,17 @@
             justify-content: center;
         }
 
+        /* --- LOGO BACKGROUND FIX --- */
+        /* This mix-blend-mode makes pure black transparent if the logo is on a dark background */
+        .logo-img {
+            mix-blend-mode: screen; 
+            filter: drop-shadow(0 0 15px var(--primary-gold));
+        }
+
         /* --- INTRO OVERLAY --- */
         #intro-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(20px);
             z-index: 9999;
@@ -44,7 +48,7 @@
         }
 
         .intro-content {
-            max-width: 650px; /* Widened slightly */
+            max-width: 650px;
             text-align: center;
             padding: 40px;
             background: rgba(255, 255, 255, 0.03);
@@ -59,13 +63,10 @@
         .intro-title { color: var(--primary-gold); letter-spacing: 6px; text-transform: uppercase; font-size: 1.6rem; margin-bottom: 20px; font-weight: 900; }
         .intro-text { line-height: 1.8; font-size: 1rem; color: #ccc; margin-bottom: 35px; }
 
-        /* WIDER LOGO STYLING */
         .intro-logo-container { margin-bottom: 40px; text-align: center; width: 100%; }
         .intro-logo-container img { 
             width: 100%; 
-            max-width: 250px; /* Increased from 140px */
-            filter: drop-shadow(0 0 20px var(--primary-gold)); 
-            transition: transform 0.3s ease;
+            max-width: 250px; 
         }
 
         /* LEADERSHIP GRID */
@@ -125,15 +126,14 @@
         .logo-container { text-align: center; margin-bottom: 30px; }
         .logo-container img { 
             width: 100%; 
-            max-width: 220px; /* Stretched more on the sides */
-            filter: drop-shadow(0 0 15px var(--primary-gold)); 
+            max-width: 220px; 
         }
 
         h1 { text-align: center; color: var(--primary-gold); text-transform: uppercase; letter-spacing: 5px; font-size: 1.8rem; margin-bottom: 45px; font-weight: 900; }
         
-        /* Form Styling Unchanged per request */
         .form-group { margin-bottom: 25px; }
         label { display: block; margin-bottom: 10px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--primary-gold); }
+        
         input[type="text"], textarea, select {
             width: 100%;
             padding: 14px;
@@ -207,7 +207,7 @@
         <h2 class="intro-title">Absolute Synergy</h2>
         
         <div class="intro-logo-container">
-            <img src="clan.jpg" alt="4SYN Logo">
+            <img src="clan.jpg" alt="4SYN Logo" class="logo-img">
         </div>
 
         <p class="intro-text">
@@ -257,14 +257,14 @@
 
 <div class="container">
     <div class="logo-container">
-        <img src="clan.jpg" alt="4SYN Logo">
+        <img src="clan.jpg" alt="4SYN Logo" class="logo-img">
     </div>
     
     <h1>4SYN Recruitment</h1>
 
     <form id="recruitmentForm">
         <div class="form-group">
-            <label>In-Game Name & UID <span class="required-star">*</span></label>
+            <label>In-Game Name & UID <span style="color:red">*</span></label>
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="ign" placeholder="IGN" style="width: 50%;" required>
                 <input type="text" id="uid" placeholder="Game UID" style="width: 50%;" required>
@@ -272,7 +272,7 @@
         </div>
 
         <div class="form-group">
-            <label>Playstyle <span class="required-star">*</span></label>
+            <label>Playstyle <span style="color:red">*</span></label>
             <div class="option-grid">
                 <label class="option-card">
                     <input type="radio" name="playstyle" value="Competitive" required> Competitive
@@ -284,7 +284,7 @@
         </div>
 
         <div class="form-group">
-            <label>Platform <span class="required-star">*</span></label>
+            <label>Platform <span style="color:red">*</span></label>
             <div class="option-grid">
                 <label class="option-card"><input type="radio" name="platform" value="PC" required> PC</label>
                 <label class="option-card"><input type="radio" name="platform" value="Mobile"> Mobile</label>
@@ -292,12 +292,12 @@
         </div>
 
         <div class="form-group">
-            <label>Discord Username <span class="required-star">*</span></label>
+            <label>Discord Username <span style="color:red">*</span></label>
             <input type="text" id="discordUser" placeholder="e.g. username" required>
         </div>
 
         <div class="form-group">
-            <label>Age & Nationality <span class="required-star">*</span></label>
+            <label>Age & Nationality <span style="color:red">*</span></label>
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="age" placeholder="Age" style="width: 30%;" required>
                 <input type="text" id="nationality" placeholder="Nationality" style="width: 70%;" required>
@@ -305,7 +305,7 @@
         </div>
 
         <div class="form-group">
-            <label>Working Microphone? <span class="required-star">*</span></label>
+            <label>Working Microphone? <span style="color:red">*</span></label>
             <select id="hasMic" required>
                 <option value="" disabled selected>Choose...</option>
                 <option value="Yes">Yes</option>
@@ -315,7 +315,7 @@
         </div>
 
         <div class="form-group">
-            <label>Why join 4SYN? <span class="required-star">*</span></label>
+            <label>Why join 4SYN? <span style="color:red">*</span></label>
             <textarea id="whyJoin" rows="3" required></textarea>
         </div>
 
@@ -325,7 +325,7 @@
         </div>
 
         <div class="form-group">
-            <label>Ready for 4SYN tag? <span class="required-star">*</span></label>
+            <label>Ready for 4SYN tag? <span style="color:red">*</span></label>
             <select id="tagReady" required>
                 <option value="" disabled selected>Choose...</option>
                 <option value="Immediately">Yes, immediately</option>
@@ -354,6 +354,7 @@
     function confirmAndSubmit() {
         modal.style.display = 'none';
         document.getElementById('submitBtn').innerText = "TRANSMITTING...";
+        document.getElementById('submitBtn').disabled = true;
         
         const data = {
             ign: document.getElementById('ign').value,
@@ -374,14 +375,32 @@
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({
                 embeds: [{
-                    title: "📜 NEW APPLICATION",
+                    title: "📜 NEW CLAN APPLICATION",
                     color: 13936183,
-                    fields: Object.keys(data).map(key => ({ name: key.toUpperCase(), value: data[key], inline: true }))
+                    fields: [
+                        { name: "👤 IGN", value: data.ign, inline: true },
+                        { name: "🆔 Game UID", value: data.uid, inline: true },
+                        { name: "⚔️ Playstyle", value: data.playstyle, inline: true },
+                        { name: "🎮 Platform", value: data.platform, inline: true },
+                        { name: "💬 Discord", value: data.discord, inline: true },
+                        { name: "🎂 Age", value: data.age, inline: true },
+                        { name: "🌍 Nation", value: data.nat, inline: true },
+                        { name: "🎙️ Mic", value: data.mic, inline: true },
+                        { name: "🏷️ Tag Ready", value: data.tag, inline: true },
+                        { name: "🏰 Previous Clan", value: data.prev },
+                        { name: "📝 Why 4SYN?", value: data.why }
+                    ],
+                    footer: { text: "4SYNARIS Recruitment System" },
+                    timestamp: new Date().toISOString()
                 }]
             })
         }).then(() => {
-            alert("Success!");
+            alert("Application Sent Successfully!");
             location.reload();
+        }).catch(err => {
+            alert("Error sending application.");
+            document.getElementById('submitBtn').innerText = "SUBMIT APPLICATION";
+            document.getElementById('submitBtn').disabled = false;
         });
     }
 </script>
