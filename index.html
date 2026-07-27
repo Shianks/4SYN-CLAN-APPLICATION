@@ -28,7 +28,6 @@
         }
 
         /* --- LOGO BACKGROUND FIX --- */
-        /* This mix-blend-mode makes pure black transparent if the logo is on a dark background */
         .logo-img {
             mix-blend-mode: screen; 
             filter: drop-shadow(0 0 15px var(--primary-gold));
@@ -69,8 +68,30 @@
             max-width: 250px; 
         }
 
-        /* LEADERSHIP GRID */
-        .leadership-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 40px; width: 100%; }
+        /* LEADERSHIP GRID & ROW STRUCTURE */
+        .leadership-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .leadership-row-top { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 20px; 
+            width: 100%; 
+        }
+        .leadership-row-bottom { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            width: 100%; 
+        }
+        .leadership-row-bottom .leader-card {
+            width: calc(33.33% - 14px);
+        }
+        
         .leader-card { 
             border: 1px solid rgba(212, 175, 55, 0.2); 
             padding: 20px 10px; 
@@ -80,6 +101,7 @@
             flex-direction: column; 
             align-items: center; 
             transition: 0.3s;
+            box-sizing: border-box;
         }
         .leader-card:hover { border-color: var(--primary-gold); transform: translateY(-5px); }
 
@@ -146,6 +168,8 @@
         }
 
         .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        /* OPTION CARD & INTERACTIVE BENEFIT TEXT STYLES */
         .option-card {
             position: relative;
             background: rgba(255, 255, 255, 0.03);
@@ -157,8 +181,49 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
         }
         .option-card:hover { border-color: var(--primary-gold); background: rgba(212, 175, 55, 0.05); }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            pointer-events: none; 
+        }
+
+        .option-title {
+            font-weight: bold;
+            display: block;
+        }
+
+        .option-benefit {
+            font-size: 0.75rem;
+            color: #aaa;
+            opacity: 0;
+            max-height: 0;
+            margin-top: 0;
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+
+        /* Displays benefit descriptions on hover, focus, or selection */
+        .option-card:hover .option-benefit,
+        .option-card:focus-within .option-benefit,
+        .option-card input[type="radio"]:checked ~ .card-content .option-benefit {
+            opacity: 0.75;
+            max-height: 40px;
+            margin-top: 6px;
+        }
+
+        .option-card:has(input[type="radio"]:checked) {
+            border-color: var(--primary-gold);
+            background: rgba(212, 175, 55, 0.08);
+        }
 
         button#submitBtn {
             width: 100%;
@@ -214,21 +279,37 @@
             4SYN | 4SYNARIS is a highly competitive and community driven team in Bloodstrike. Known for its generosity and supportive environment, the clan fosters growth and excellence among its members.
         </p>
 
-        <div class="leadership-grid">
-            <div class="leader-card">
-                <div class="leader-portrait"><img src="hisae.jpg" alt="Hisae"></div>
-                <span class="leader-role">Owner</span>
-                <span class="leader-name">Hisae</span>
+        <div class="leadership-container">
+            <!-- Top Row: Owner, Vice Leader, Mod 1 -->
+            <div class="leadership-row-top">
+                <div class="leader-card">
+                    <div class="leader-portrait"><img src="hisae.jpg" alt="Hisae"></div>
+                    <span class="leader-role">Owner</span>
+                    <span class="leader-name">Hisae</span>
+                </div>
+                <div class="leader-card">
+                    <div class="leader-portrait"><img src="shianks.jpg" alt="Shianks"></div>
+                    <span class="leader-role">Vice Leader</span>
+                    <span class="leader-name">Shianks</span>
+                </div>
+                <div class="leader-card">
+                    <div class="leader-portrait"><img src="sushi.jpg" alt="Sushi"></div>
+                    <span class="leader-role">Mod</span>
+                    <span class="leader-name">Sushi</span>
+                </div>
             </div>
-            <div class="leader-card">
-                <div class="leader-portrait"><img src="shianks.jpg" alt="Shianks"></div>
-                <span class="leader-role">Vice Leader</span>
-                <span class="leader-name">Shianks</span>
-            </div>
-            <div class="leader-card">
-                <div class="leader-portrait"><img src="sushi.jpg" alt="Sushi"></div>
-                <span class="leader-role">Mod</span>
-                <span class="leader-name">Sushi</span>
+            <!-- Bottom Row: Mod 2, Mod 3 (Centered below) -->
+            <div class="leadership-row-bottom">
+                <div class="leader-card">
+                    <div class="leader-portrait"><img src="mod2.jpg" alt="Moderator 2"></div>
+                    <span class="leader-role">Mod</span>
+                    <span class="leader-name">Mod </span>
+                </div>
+                <div class="leader-card">
+                    <div class="leader-portrait"><img src="mod3.jpg" alt="Moderator 3"></div>
+                    <span class="leader-role">Mod</span>
+                    <span class="leader-name">Mod </span>
+                </div>
             </div>
         </div>
 
@@ -274,11 +355,21 @@
         <div class="form-group">
             <label>Playstyle <span style="color:red">*</span></label>
             <div class="option-grid">
-                <label class="option-card">
-                    <input type="radio" name="playstyle" value="Competitive" required> Competitive
+                <!-- Competitive Option -->
+                <label class="option-card" onclick="void(0)">
+                    <input type="radio" name="playstyle" value="Competitive" required>
+                    <div class="card-content">
+                        <span class="option-title">Competitive</span>
+                        <span class="option-benefit">Scrims, Tournaments, & High-Tier Ranked Focus</span>
+                    </div>
                 </label>
-                <label class="option-card">
-                    <input type="radio" name="playstyle" value="Casual"> Casual
+                <!-- Casual Option -->
+                <label class="option-card" onclick="void(0)">
+                    <input type="radio" name="playstyle" value="Casual">
+                    <div class="card-content">
+                        <span class="option-title">Casual</span>
+                        <span class="option-benefit">Chill Gaming, Custom Matches, & Community Fun</span>
+                    </div>
                 </label>
             </div>
         </div>
@@ -317,6 +408,12 @@
         <div class="form-group">
             <label>Why join 4SYN? <span style="color:red">*</span></label>
             <textarea id="whyJoin" rows="3" required></textarea>
+        </div>
+
+        <!-- Where did you hear about us? field positioned before Previous Clan -->
+        <div class="form-group">
+            <label>Where did you hear about us? <span style="color:red">*</span></label>
+            <input type="text" id="source" placeholder="e.g. TikTok, In-game, Friend" required>
         </div>
 
         <div class="form-group">
@@ -366,6 +463,7 @@
             nat: document.getElementById('nationality').value,
             mic: document.getElementById('hasMic').value,
             why: document.getElementById('whyJoin').value,
+            source: document.getElementById('source').value,
             prev: document.getElementById('prevClan').value || "None",
             tag: document.getElementById('tagReady').value
         };
@@ -387,6 +485,7 @@
                         { name: "🌍 Nation", value: data.nat, inline: true },
                         { name: "🎙️ Mic", value: data.mic, inline: true },
                         { name: "🏷️ Tag Ready", value: data.tag, inline: true },
+                        { name: "📢 Source", value: data.source },
                         { name: "🏰 Previous Clan", value: data.prev },
                         { name: "📝 Why 4SYN?", value: data.why }
                     ],
