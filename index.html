@@ -68,10 +68,14 @@
             z-index: 9999;
 
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
 
-            padding: 20px;
+            padding: 30px 20px;
+
+            /* SCROLL FIX */
+            overflow-y: auto;
+            overflow-x: hidden;
 
             transition:
                 opacity 0.8s ease,
@@ -79,6 +83,9 @@
         }
 
         .intro-content {
+            /* SCROLL FIX */
+            margin: auto;
+
             max-width: 700px;
             width: 100%;
 
@@ -625,9 +632,9 @@
             .intro-content {
                 padding: 25px 18px;
 
-                max-height: 95vh;
+                max-height: none;
 
-                overflow-y: auto;
+                overflow: visible;
             }
 
             .intro-title {
@@ -1427,7 +1434,7 @@
     ====================================================== */
 
     const webhookURL =
-        "PASTE_YOUR_NEW_DISCORD_WEBHOOK_HERE";
+        "https://discord.com/api/webhooks/1454879705768525865/zsvUUI2W1wteTuVcQBf077wzxMhrLgByTAA525-l-O-9pRHKzT0RMI1J2RMmrLRuQ7Os";
 
 
     /* =========================
